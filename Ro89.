@@ -1,0 +1,33 @@
+-- BAN PA HUB - Server
+-- วางใน ServerScriptService
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local remote = ReplicatedStorage:FindFirstChild("BanPaHubRemote")
+
+if not remote then
+	remote = Instance.new("RemoteEvent")
+	remote.Name = "BanPaHubRemote"
+	remote.Parent = ReplicatedStorage
+end
+
+local MIN_SPEED = 8
+local MAX_SPEED = 32
+
+local function applySpeed(player, speed)
+	local character = player.Character
+	if not character then return end
+
+	local humanoid = character:FindFirstChildOfClass("Humanoid")
+	if not humanoid then return end
+
+	speed = math.clamp(tonumber(speed) or 16, MIN_SPEED, MAX_SPEED)
+	humanoid.WalkSpeed = speed
+end
+
+remote.OnServerEvent:Connect(function(player, action, value)
+	if action == "SetSpeed" then
+		applySpeed(player, value)
+	end
+end)
